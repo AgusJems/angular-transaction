@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/demo/api/product';
 import { MessageService } from 'primeng/api';
-import { Table } from 'primeng/table';
-import { ProductService } from 'src/app/demo/service/product.service';
+import { Transaction } from 'src/app/demo/api/transaction';
+import { TransactionService } from 'src/app/demo/service/transaction.service';
 
 @Component({
-    templateUrl: './crud.component.html',
-    providers: [MessageService]
+  selector: 'app-transaction',
+  templateUrl: './transaction.component.html',
+  styleUrls: ['./transaction.component.scss'],
+  providers: [MessageService, TransactionService]
 })
-export class CrudComponent implements OnInit {
+export class TransactionComponent implements OnInit {
 
     productDialog: boolean = false;
 
@@ -16,11 +17,11 @@ export class CrudComponent implements OnInit {
 
     deleteProductsDialog: boolean = false;
 
-    products: Product[] = [];
+    transactions: Transaction[] = [];
 
-    product: Product = {};
+    transaction: Transaction = {};
 
-    selectedProducts: Product[] = [];
+    selectedProducts: Transaction[] = [];
 
     submitted: boolean = false;
 
@@ -30,10 +31,10 @@ export class CrudComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private productService: ProductService, private messageService: MessageService) { }
+    constructor(private transactionService: TransactionService, private messageService: MessageService) { }
 
     ngOnInit() {
-        this.productService.getProducts().then(data => this.products = data);
+        this.transactionService.getProducts().then(data => this.transactions = data);
 
         this.cols = [
             { field: 'product', header: 'Product' },
@@ -50,38 +51,27 @@ export class CrudComponent implements OnInit {
         ];
     }
 
-    openNew() {
-        this.product = {};
-        this.submitted = false;
-        this.productDialog = true;
-    }
-
     deleteSelectedProducts() {
         this.deleteProductsDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
-    }
-
-    deleteProduct(product: Product) {
+    deleteProduct(product: Transaction) {
         this.deleteProductDialog = true;
-        this.product = { ...product };
+        this.transaction = { ...product };
     }
 
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
+        this.transactions = this.transactions.filter(val => !this.selectedProducts.includes(val));
         this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
         this.selectedProducts = [];
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
+        this.transactions = this.transactions.filter(val => val.id !== this.transaction.id);
         this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-        this.product = {};
+        this.transaction = {};
     }
 
     hideDialog() {
@@ -92,32 +82,32 @@ export class CrudComponent implements OnInit {
     saveProduct() {
         this.submitted = true;
 
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
+        if (this.transaction.name?.trim()) {
+            if (this.transaction.id) {
                 // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.products[this.findIndexById(this.product.id)] = this.product;
+                this.transaction.inventoryStatus = this.transaction.inventoryStatus.value ? this.transaction.inventoryStatus.value : this.transaction.inventoryStatus;
+                this.transactions[this.findIndexById(this.transaction.id)] = this.transaction;
                 this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
             } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
+                this.transaction.id = this.createId();
+                this.transaction.code = this.createId();
+                this.transaction.image = 'product-placeholder.svg';
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
+                this.transactions.push(this.transaction);
                 this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
             }
 
-            this.products = [...this.products];
+            this.transactions = [...this.transactions];
             this.productDialog = false;
-            this.product = {};
+            this.transaction = {};
         }
     }
 
     findIndexById(id: string): number {
         let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
+        for (let i = 0; i < this.transactions.length; i++) {
+            if (this.transactions[i].id === id) {
                 index = i;
                 break;
             }
@@ -133,9 +123,5 @@ export class CrudComponent implements OnInit {
             id += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return id;
-    }
-
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 }

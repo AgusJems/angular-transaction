@@ -5,9 +5,14 @@ import { RouterModule } from '@angular/router';
     imports: [
         RouterModule.forChild([
             {
-                path: 'crud',
+                path: 'product',
                 loadChildren: () =>
-                    import('./crud/crud.module').then((m) => m.CrudModule),
+                    import('./product/product.module').then((m) => m.ProductModule),
+            },
+            {
+                path: 'transaksi',
+                loadChildren: () =>
+                    import('./transaction/transaction.module').then((m) => m.TransactionModule),
             },
             { path: '**', redirectTo: '/notfound' },
         ]),

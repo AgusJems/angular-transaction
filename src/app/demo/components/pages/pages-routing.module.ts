@@ -1,3 +1,4 @@
+import { KaryawanComponent } from './karyawan/karyawan.component';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -5,14 +6,9 @@ import { RouterModule } from '@angular/router';
     imports: [
         RouterModule.forChild([
             {
-                path: 'product',
+                path: 'karyawan',
                 loadChildren: () =>
-                    import('./product/product.module').then((m) => m.ProductModule),
-            },
-            {
-                path: 'transaksi',
-                loadChildren: () =>
-                    import('./transaction/transaction.module').then((m) => m.TransactionModule),
+                    import('./karyawan/karyawan.module').then((m) => m.KaryawanModule),
             },
             { path: '**', redirectTo: '/notfound' },
         ]),

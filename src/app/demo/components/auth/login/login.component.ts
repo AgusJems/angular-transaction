@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { LoginInterface } from './login-interface';
+import { AuthService } from 'src/app/core/service/auth.service';
+import { Router } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-login',
@@ -11,7 +15,8 @@ import { LayoutService } from 'src/app/layout/service/app.layout.service';
             margin-right: 1rem;
             color: var(--primary-color) !important;
         }
-    `]
+    `],
+    providers: [ConfirmationService]
 })
 export class LoginComponent {
 
@@ -19,5 +24,27 @@ export class LoginComponent {
 
     password!: string;
 
-    constructor(public layoutService: LayoutService) { }
+    public login: LoginInterface = {};
+
+    constructor(public layoutService: LayoutService, private auth: AuthService, private _router: Router, private confirmationService: ConfirmationService) { }
+
+    postLogin() {
+        this.auth.login(this.login.username, this.login.password).then((e) => {
+            if (e.status == '200') {
+                this.auth.setSession(e.data);
+                this._router.navigate(["/"]);
+            } else {
+                this.confirm();
+            }
+        })
+    }
+
+    confirm() {
+        this.confirmationService.confirm({
+            message: 'Username atau Password Salah !!!',
+            accept: () => {
+                //Actual logic to perform a confirmation
+            }
+        });
+    }
 }

@@ -1,0 +1,138 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <h5 class="m-0">Add Product</h5>
+            <p-toast></p-toast>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <!-- <span class="block mt-2 md:mt-0 p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
+                </span> -->
+            </div>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left"></ng-template>
+                <ng-template pTemplate="right">
+                    <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                    <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload> -->
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" pTooltip="CSV" (click)="exportExcel()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="dataKaryawan" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','dob','address','nik','npwp','status']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="name">Nama Karyawan <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="dob">Date Of Birthday <p-sortIcon field="dob"></p-sortIcon></th>
+                        <th pSortableColumn="address">Alamat <p-sortIcon field="address"></p-sortIcon></th>
+                        <th pSortableColumn="nik">NIK <p-sortIcon field="nik"></p-sortIcon></th>
+                        <th pSortableColumn="npwp">NPWP <p-sortIcon field="npwp"></p-sortIcon></th>
+                        <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+                        <th pSortableColumn="file">File <p-sortIcon field="file"></p-sortIcon></th>
+                        <th pSortableColumn="pilih">Pilih <p-sortIcon field="aksi"></p-sortIcon></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                    <tr>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Nama Karyawan</span>
+                            {{data.name}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Date Of Birthday</span>
+                            {{data.dob}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Alamat</span>
+                            {{data.address}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">NIK</span>
+                            {{data.karyawanDetail!.nik}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">NPWP</span>
+                            {{data.karyawanDetail!.npwp}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Status</span>
+                            {{data.status}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">File</span>
+                            {{data.file}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(data)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(data)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Input Karyawan" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="name">Nama Karyawan</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="karyawan.name" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !karyawan.name}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !karyawan.name">Name is required.</small>
+                </div>
+                <div class="field">
+                    <label for="calendar">Daten Of Birthday</label>
+                    <p-calendar inputId="calendar" [(ngModel)]="karyawan.dob" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>
+                </div>
+                <div class="field">
+                    <label for="address">Alamat</label>
+                    <input type="text" pInputText id="address" [(ngModel)]="karyawan.address" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !karyawan.address}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !karyawan.address">Name is required.</small>
+                </div>
+                <div class="field">
+                    <label for="nik">NIK</label>
+                    <input type="text" pInputText id="nik" [(ngModel)]="karyawan.karyawanDetail!.nik" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !karyawan.karyawanDetail!.nik}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !karyawan.karyawanDetail!.nik">Name is required.</small>
+                </div>
+                <div class="field">
+                    <label for="npwp">NPWP</label>
+                    <input type="text" pInputText id="npwp" [(ngModel)]="karyawan.karyawanDetail!.npwp" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !karyawan.karyawanDetail!.npwp}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !karyawan.karyawanDetail!.npwp">Name is required.</small>
+                </div>
+                <div class="field">
+                    <label for="status">Status</label>
+                    <input type="text" pInputText id="status" [(ngModel)]="karyawan.status" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !karyawan.status}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !karyawan.status">Name is required.</small>
+                </div>
+                <p-fileUpload chooseLabel="Upload" mode="basic" name="file" url="http://localhost:9090/api/v1/upload" [maxFileSize]="1000000" (onUpload)="onBasicUpload()" [auto]="true" method="post" [headers]="header"></p-fileUpload>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="karyawan">Are you sure you want to delete <b>{{karyawan.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected products?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

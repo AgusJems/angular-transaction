@@ -1,6 +1,7 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { AppLayoutComponent } from './layout/app.layout.component';
+import { AuthGuard } from './core/guard/auth.guard';
 
 @NgModule({
     imports: [
@@ -8,23 +9,30 @@ import { AppLayoutComponent } from './layout/app.layout.component';
             [
                 {
                     path: '',
-                    component: AppLayoutComponent,
+                    component: AppLayoutComponent, canActivate: [AuthGuard],
                     children: [
                         {
                             path: '',
                             loadChildren: () =>
                                 import(
                                     './demo/components/dashboard/dashboard.module'
-                                ).then((m) => m.DashboardModule),
+                                ).then((m) => m.DashboardModule),canActivate: [AuthGuard]
                         },
                         {
                             path: 'pages',
                             loadChildren: () =>
                                 import(
                                     './demo/components/pages/pages.module'
-                                ).then((m) => m.PagesModule),
+                                ).then((m) => m.PagesModule), canActivate: [AuthGuard]
                         },
                     ],
+                },
+                {
+                    path: 'auth',
+                    loadChildren: () =>
+                        import(
+                            './demo/components/auth/auth.module'
+                        ).then((m) => m.AuthModule),
                 },
             ],
             {
